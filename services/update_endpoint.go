@@ -195,8 +195,9 @@ func (a *UpdateEndpointService) ValidateEndpoint(ctx context.Context, project *d
 			OAuth2TokenGetter: oauth2TokenGetter,
 		})
 		if pingErr != nil {
-			a.Logger.ErrorContext(ctx, "failed to ping tls endpoint", "error", pingErr)
-			return "", fmt.Errorf("endpoint validation failed: %w", pingErr)
+			// Neynar fork: a failed probe must not block endpoint creation/update.
+			// Log it and continue (carried from fork commits defb4aec..3ae11133).
+			a.Logger.WarnContext(ctx, "failed to ping tls endpoint", "error", pingErr)
 		}
 	default:
 		return "", ErrInvalidEndpointScheme

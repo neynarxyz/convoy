@@ -107,12 +107,11 @@ func TestEndpointPingValidation(t *testing.T) {
 					}
 					endpointURL := server.URL + "/webhook"
 					result, err := validateEndpointPingTestURL(t, operation, endpointURL, auth)
-					if !tc.skip && tc.status != http.StatusOK {
-						require.ErrorContains(t, err, "endpoint validation failed")
-					} else {
-						require.NoError(t, err)
-						require.Equal(t, endpointURL, result)
-					}
+					// Neynar fork: a failed probe is logged as a warning and does not
+					// fail validation, so every case must succeed. The request counts
+					// below still prove the probe ran when ping validation is enabled.
+					require.NoError(t, err)
+					require.Equal(t, endpointURL, result)
 					var wantRequests int32
 					if !tc.skip {
 						wantRequests = 1
