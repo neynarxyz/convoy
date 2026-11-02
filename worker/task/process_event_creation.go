@@ -550,7 +550,7 @@ func getEventDeliveryStatus(ctx context.Context, subscription *datastore.Subscri
 			return datastore.DiscardedEventStatus
 		}
 	default:
-		log.FromContext(ctx).Debug("unknown subscription type: %s", subscription.Type)
+		log.FromContext(ctx).Debugf("unknown subscription type: %s", subscription.Type)
 	}
 
 	return datastore.ScheduledEventStatus

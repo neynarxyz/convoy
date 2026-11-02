@@ -1436,7 +1436,7 @@ func (s *PublicPortalLinkIntegrationTestSuite) Test_UpdatePortalLinks() {
 			"endpoints": ["%s"]
 		}`, endpoint2.UID)
 
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPut, url, s.APIKey, body)
 	w := httptest.NewRecorder()
 
@@ -1659,7 +1659,7 @@ func (s *PublicProjectIntegrationTestSuite) TestCreateProjectWithPersonalAPIKey(
 	require.NoError(s.T(), err)
 
 	url := fmt.Sprintf("/api/v1/projects?orgID=%s", s.DefaultOrg.UID)
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 
 	req := createRequest(http.MethodPost, url, key, body)
 
@@ -1718,7 +1718,7 @@ func (s *PublicProjectIntegrationTestSuite) TestCreateProjectWithPersonalAPIKey_
 	require.NoError(s.T(), err)
 
 	url := fmt.Sprintf("/api/v1/projects?orgID=%s", s.DefaultOrg.UID)
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPost, url, key, body)
 
 	w := httptest.NewRecorder()
@@ -1973,7 +1973,7 @@ func (s *PublicSourceIntegrationTestSuite) Test_CreateSource() {
 	}`
 
 	url := fmt.Sprintf("/api/v1/projects/%s/sources", s.DefaultProject.UID)
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPost, url, s.APIKey, body)
 	w := httptest.NewRecorder()
 
@@ -2039,7 +2039,7 @@ func (s *PublicSourceIntegrationTestSuite) Test_CreateSource_NoName() {
 	}`
 
 	url := fmt.Sprintf("/api/v1/projects/%s/sources", s.DefaultProject.UID)
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPost, url, s.APIKey, body)
 	w := httptest.NewRecorder()
 
@@ -2068,7 +2068,7 @@ func (s *PublicSourceIntegrationTestSuite) Test_CreateSource_InvalidSourceType()
 
 	url := fmt.Sprintf("/api/v1/projects/%s/sources", s.DefaultProject.UID)
 
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPost, url, s.APIKey, body)
 	w := httptest.NewRecorder()
 
@@ -2108,7 +2108,7 @@ func (s *PublicSourceIntegrationTestSuite) Test_UpdateSource() {
 		}
 	}`, name, !isDisabled)
 
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPut, url, s.APIKey, body)
 	w := httptest.NewRecorder()
 
@@ -2311,7 +2311,7 @@ func (s *PublicSubscriptionIntegrationTestSuite) Test_CreateSubscription_Incomin
 	}`, endpoint.UID, source.UID, project.UID, endpoint.UID)
 
 	url := fmt.Sprintf("/api/v1/projects/%s/subscriptions", project.UID)
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPost, url, apiKey, body)
 	w := httptest.NewRecorder()
 
@@ -2359,7 +2359,7 @@ func (s *PublicSubscriptionIntegrationTestSuite) Test_CreateSubscription_AppNotF
 	}`, ulid.Make().String(), endpoint.UID)
 
 	url := fmt.Sprintf("/api/v1/projects/%s/subscriptions", s.DefaultProject.UID)
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPost, url, s.APIKey, body)
 	w := httptest.NewRecorder()
 
@@ -2395,7 +2395,7 @@ func (s *PublicSubscriptionIntegrationTestSuite) Test_CreateSubscription_Endpoin
 	}`, ulid.Make().String(), s.DefaultProject.UID, ulid.Make().String())
 
 	url := fmt.Sprintf("/api/v1/projects/%s/subscriptions", s.DefaultProject.UID)
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPost, url, s.APIKey, body)
 	w := httptest.NewRecorder()
 
@@ -2428,7 +2428,7 @@ func (s *PublicSubscriptionIntegrationTestSuite) Test_CreateSubscription_Invalid
 	}`
 
 	url := fmt.Sprintf("/api/v1/projects/%s/subscriptions", s.DefaultProject.UID)
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPost, url, s.APIKey, body)
 	w := httptest.NewRecorder()
 
@@ -2634,7 +2634,7 @@ func (s *PublicSubscriptionIntegrationTestSuite) Test_UpdateSubscription() {
 		"disable_endpoint": false
 	}`
 
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPut, url, s.APIKey, body)
 	w := httptest.NewRecorder()
 
@@ -2682,7 +2682,7 @@ func (s *PublicSubscriptionIntegrationTestSuite) Test_CreateSubscription_Creates
 
 	// Arrange Request
 	url := fmt.Sprintf("/api/v1/projects/%s/subscriptions", s.DefaultProject.UID)
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPost, url, s.APIKey, body)
 	w := httptest.NewRecorder()
 
@@ -2741,7 +2741,7 @@ func (s *PublicSubscriptionIntegrationTestSuite) Test_UpdateSubscription_Creates
 
 	// Arrange Request
 	url := fmt.Sprintf("/api/v1/projects/%s/subscriptions/%s", s.DefaultProject.UID, sub.UID)
-	body := serialize(bodyStr)
+	body := serialize("%s", bodyStr)
 	req := createRequest(http.MethodPut, url, s.APIKey, body)
 	w := httptest.NewRecorder()
 
