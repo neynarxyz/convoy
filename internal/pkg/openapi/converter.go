@@ -87,6 +87,21 @@ func (c *Converter) ExtractWebhooks() (*Collection, error) {
 	}
 
 	// Try the official webhooks field first (OpenAPI 3.1)
+	for name, pathItem := range c.doc.Webhooks {
+		raw, err := json.Marshal(pathItem)
+		if err != nil {
+			continue
+		}
+		var pathItemRaw map[string]interface{}
+		if err := json.Unmarshal(raw, &pathItemRaw); err != nil {
+			continue
+		}
+		if webhook, err := c.extractWebhook(pathItemRaw); err == nil {
+			webhook.Name = name
+			collection.Webhooks[name] = webhook
+		}
+	}
+
 	if c.doc.Extensions != nil {
 		// Try both webhooks and x-webhooks
 		for _, key := range []string{"webhooks", "x-webhooks"} {
