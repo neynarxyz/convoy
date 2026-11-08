@@ -87,6 +87,12 @@ func (c *Converter) ExtractWebhooks() (*Collection, error) {
 	}
 
 	// Try the official webhooks field first (OpenAPI 3.1)
+	for name, pathItem := range c.doc.Webhooks {
+		if webhook := webhookFromPathItem(name, pathItem); webhook != nil {
+			collection.Webhooks[name] = webhook
+		}
+	}
+
 	if c.doc.Extensions != nil {
 		// Try both webhooks and x-webhooks
 		for _, key := range []string{"webhooks", "x-webhooks"} {
@@ -109,29 +115,9 @@ func (c *Converter) ExtractWebhooks() (*Collection, error) {
 	if len(collection.Webhooks) == 0 && c.doc.Paths != nil {
 		for path, pathItem := range c.doc.Paths.Map() {
 			if pathItem != nil && pathItem.Post != nil && isWebhook(path, pathItem.Post) {
-				if pathItem.Post.RequestBody != nil && pathItem.Post.RequestBody.Value != nil &&
-					pathItem.Post.RequestBody.Value.Content != nil &&
-					pathItem.Post.RequestBody.Value.Content["application/json"] != nil &&
-					pathItem.Post.RequestBody.Value.Content["application/json"].Schema != nil {
-
-					name := extractWebhookName(path)
-					schema := pathItem.Post.RequestBody.Value.Content["application/json"].Schema.Value
-					if schema != nil {
-						// Create a copy of the schema to avoid modifying the original
-						schemaCopy := *schema
-
-						// Add examples from the request body if available
-						if pathItem.Post.RequestBody.Value.Content["application/json"].Example != nil {
-							schemaCopy.Example = pathItem.Post.RequestBody.Value.Content["application/json"].Example
-						}
-
-						webhook := &Webhook{
-							Name:        name,
-							Description: pathItem.Post.Description,
-							Schema:      &schemaCopy,
-						}
-						collection.Webhooks[name] = webhook
-					}
+				name := extractWebhookName(path)
+				if webhook := webhookFromPathItem(name, pathItem); webhook != nil {
+					collection.Webhooks[name] = webhook
 				}
 			}
 		}
@@ -287,4 +273,29 @@ func extractWebhookName(path string) string {
 
 	// Fallback to a generic name
 	return "webhook"
+}
+
+// webhookFromPathItem builds a webhook from a loaded path item's POST
+// application/json request body, using the resolved ($ref-followed) schema.
+func webhookFromPathItem(name string, pathItem *openapi3.PathItem) *Webhook {
+	if pathItem == nil || pathItem.Post == nil || pathItem.Post.RequestBody == nil ||
+		pathItem.Post.RequestBody.Value == nil {
+		return nil
+	}
+	media := pathItem.Post.RequestBody.Value.Content.Get("application/json")
+	if media == nil || media.Schema == nil || media.Schema.Value == nil {
+		return nil
+	}
+
+	// Copy the schema to avoid modifying the original
+	schemaCopy := *media.Schema.Value
+	if media.Example != nil {
+		schemaCopy.Example = media.Example
+	}
+
+	return &Webhook{
+		Name:        name,
+		Description: pathItem.Post.Description,
+		Schema:      &schemaCopy,
+	}
 }
